@@ -1,35 +1,60 @@
-# Pilot Cars — project_specs.md
+# Project Specs — PilotCars Platform
 
 ## What the app does
-A marketing/marketplace website for **Pilot Cars** — a closed peer-to-peer car-share marketplace for verified airline crew. The site has 5 public pages that present the brand, the fleet, the referral program, the company story, and contact channels.
+
+[To be filled by researcher after company research]
+
+**Current status:** Stub. Researcher will update after studying americacarrentalmiami.com and pilotscar.com.
+
+---
 
 ## Who uses it
-Airline crew (pilots, F/As, mechanics, dispatchers, ground crew) browsing to learn about the marketplace, browse cars, refer colleagues, or contact the team.
+
+[To be filled by researcher]
+
+---
 
 ## Tech stack
-- **Framework:** Next.js 14 (App Router)
-- **Language:** TypeScript
-- **Styling:** Global CSS using the Pilots Design System tokens (CSS variables in `app/globals.css`). The design system is CSS-variable based and self-contained — no Tailwind dependency.
-- **Animation:** GSAP (`gsap` + `@gsap/react`) — used for hero text reveal, scroll-trigger reveals, marquee ticker, ken-burns hero, stat counters, magnetic card hover.
-- **Deployment target:** Vercel (no backend in this scope).
 
-## Pages and user flows (all public)
-1. `/` (Home) — full-bleed hero photograph, editorial headline, brass-tagged scrolling ICAO field ticker, floating search dock, stat band, fleet grid (9 cars), location chips, deal cards, trust band, dual feature block.
-2. `/vehicles` — page header, compact inline search dock, fleet grouped by type (Sedans, SUVs, Mini-vans, Passenger vans, Cargo vans).
-3. `/referrals` — page header, dark invite-code card, "how it works" 3-step grid, tier cards (First Officer / Captain / Fleet host), testimonial + stats, FAQ accordion, final CTA.
-4. `/about` — page header, hero photo strip, story copy, three operating pillars, dark stats band, team grid, dual block, press band, final CTA.
-5. `/contact` — page header, channel cards + HQ block, contact form, live field-status band.
+- **Language:** TypeScript
+- **Framework:** Next.js@latest (App Router)
+- **Backend-as-a-Service:** Supabase (Auth, Postgres, Storage, RLS)
+- **Styling:** Tailwind CSS
+- **Payments:** Stripe (future)
+- **Mobile:** Expo React Native (future, separate repo)
+- **Deployment:** Vercel (website), EAS (mobile)
+
+---
+
+## Pages and user flows
+
+[To be filled by team]
+
+---
 
 ## Data models
-None. Content is static (marketing site). All copy and structure lives in JSX.
+
+Supabase Postgres. Full schema + RLS in `supabase/migrations/0001_init_schema.sql`.
+Detailed reference in `docs/database.md`.
+
+- **users** — profile, 1:1 with `auth.users`. Holds airline ID image path + verification state.
+- **locations** — rental pickup/return sites (Miami, Orlando, expandable).
+- **vehicles** — fleet; `daily_rate` is all-inclusive (insurance, miles, tolls). No deposit.
+- **bookings** — rentals; `total_price = daily_rate * num_days`. Verified users only.
+- **referrals** — 8% commission tracking; links a referrer, a referred user, and the booking that triggered the commission.
+
+Admin access is gated by a JWT `app_metadata.role = 'admin'` claim (helper `public.is_admin()`).
+Airline ID images live in the private `airline-ids` storage bucket, accessed via signed URLs only.
+
+---
 
 ## Third-party services
-- Google Fonts (Geist, Instrument Serif, JetBrains Mono).
-- Unsplash CDN for hero photographs (URLs hard-coded from the design source — same images the prototype uses).
 
-## "Done" looks like
-- All 5 pages render at parity with the design prototype.
-- GSAP animations are wired up tastefully (subtle, no cheese): hero reveal, scroll-reveal sections, ticker, ken-burns, magnetic hover, stat count-up.
-- `prefers-reduced-motion` respected — every animation has a no-motion fallback.
-- `npm run build` passes with zero TypeScript errors.
-- `npm run dev` boots cleanly at http://localhost:3000.
+- Supabase
+- Stripe (future)
+
+---
+
+## Definition of "done"
+
+[To be filled by researcher + manager]

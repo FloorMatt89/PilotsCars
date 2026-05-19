@@ -1,10 +1,36 @@
 {
-  "model": "claude-haiku-4-5-20251001",
-  "theme": "auto",
-  "permissions": {
-    "bash": "allow",
-    "read": "allow",
-    "write": "allow"
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
-  "hooks": {}
+  "model": "opus",
+  "teammateMode": "in-process",
+  "permissions": {
+    "defaultMode": "bypassPermissions",
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Bash(npm *)",
+      "Bash(npx *)",
+      "Bash(git *)",
+      "Bash(node *)",
+      "Bash(ls *)",
+      "Bash(pwd)",
+      "Bash(find *)",
+      "Bash(grep *)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Edit",
+      "Write"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(git push --force *)",
+      "Bash(git reset --hard *)",
+      "Bash(docker rm *)",
+      "Bash(DROP TABLE *)",
+      "Bash(sudo *)"
+    ]
+  }
 }
