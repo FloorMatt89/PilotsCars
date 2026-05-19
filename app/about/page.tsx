@@ -1,34 +1,46 @@
 import Link from "next/link";
 import AnimationProvider from "@/components/AnimationProvider";
-import { IconShield, IconPaperPlane, IconGlobe, IconKey, IconArrowRight } from "@/components/Icons";
+import { IconShield, IconPaperPlane, IconKey, IconUser, IconArrowRight, IconCheck } from "@/components/Icons";
 
-export const metadata = { title: "About — Pilot Cars" };
+export const metadata = { title: "About — PilotCars" };
 
 export default function AboutPage() {
   return (
     <main>
       <AnimationProvider />
 
+      {/* PAGE HEAD */}
       <section className="pagehead wrap" data-hero-reveal>
         <div className="pagehead-row">
           <div>
-            <span className="eyebrow">Built by crew, for crew</span>
-            <h1 style={{ marginTop: 12 }}>A marketplace <em className="editorial-italic">flown</em> by its members.</h1>
+            <span className="eyebrow">Car rental for verified airline crew</span>
+            <h1 style={{ marginTop: 12 }}>Built for crew.<br /><em className="editorial-italic">Not the counter.</em></h1>
             <p className="breadcrumb"><Link href="/">Home</Link> &nbsp;/&nbsp; About</p>
           </div>
-          <p>Pilot Cars is a closed peer-to-peer car-share marketplace for airline workers. We&apos;re owned and operated by the people who use it — pilots, mechanics, F/As, dispatchers, and their direct family.</p>
+          <p>PilotCars is a specialized car rental service for verified airline crew — pilots, flight attendants, mechanics, dispatchers, and ground crew. No deposits. All-inclusive pricing. Verified members only.</p>
         </div>
       </section>
 
-      {/* HERO IMAGE STRIP */}
+      {/* HERO IMAGE */}
       <section className="wrap" style={{ paddingTop: 40 }} data-reveal>
         <div style={{ position: "relative", borderRadius: "var(--radius-md)", overflow: "hidden", aspectRatio: "16 / 7", background: "#1a1a1a" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=2200&q=80" alt="Regional airline ramp at dusk" style={{ width: "100%", height: "100%", objectFit: "cover" }} data-kenburns />
+          <img
+            src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=2200&q=80"
+            alt="Regional airline ramp at dusk"
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            data-kenburns
+          />
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(0,0,0,0.0) 50%, rgba(0,0,0,0.65) 100%)" }} />
-          <div style={{ position: "absolute", left: 40, bottom: 32, right: 40, display: "flex", justifyContent: "space-between", alignItems: "flex-end", color: "var(--color-on-dark)" }}>
-            <span className="eyebrow eyebrow--on-dark">Ramp at KORD · 04:18 local</span>
-            <span className="eyebrow eyebrow--on-dark" style={{ fontFamily: "var(--font-mono)" }}>N743UA · Layover crew, inbound</span>
+          <div style={{ position: "absolute", left: 40, bottom: 32, right: 40, display: "flex", justifyContent: "space-between", alignItems: "flex-end", color: "var(--color-on-dark)", flexWrap: "wrap", gap: 12 }}>
+            <div>
+              <span className="eyebrow eyebrow--on-dark" style={{ display: "block", marginBottom: 8 }}>The PilotCars difference</span>
+              <h2 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(22px, 3vw, 32px)", fontWeight: 500, letterSpacing: "-0.02em", color: "#fff", margin: 0, maxWidth: 500 }}>
+                No deposit. No hidden fees.<br />
+                <em className="editorial-italic" style={{ color: "#F0CB6B" }}>No nonsense.</em>
+              </h2>
+            </div>
+            <span className="eyebrow eyebrow--on-dark" style={{ fontFamily: "var(--font-mono)" }}>Miami · Orlando · Expanding</span>
           </div>
         </div>
       </section>
@@ -38,29 +50,68 @@ export default function AboutPage() {
         <div className="aboutintro">
           <div>
             <span className="eyebrow eyebrow--ink">Our story</span>
-            <h2 style={{ marginTop: 12 }}>It started on a shuttle bus from KORD to a Holiday Inn.</h2>
+            <h2 style={{ marginTop: 12 }}>The car rental industry wasn&apos;t built for airline crew. We fixed that.</h2>
           </div>
           <div>
-            <p>Two regional first officers, one mechanic, four hours of rain delay between us. Someone said the quiet thing every layover crew has said for forty years: <i>I&apos;d just rent my car out at base if I trusted who was driving it</i>. By the time the shuttle reached the lobby, we&apos;d named the thing.</p>
-            <p>Pilot Cars launched in early 2025 with seventeen hosts at four fields. Every car was driven by someone who could verify their crew badge. Every booking was someone who knew, by sight, what a captain&apos;s stripes looked like.</p>
-            <p>We&apos;re now at 3,490 cars across 38 fields — still closed, still verified, still built around the simple bet that crew trusts crew more than crew trusts the counter.</p>
+            <p>Every time a crew member lands, the same problem plays out: a $400–$1,500 deposit hold on their debit card, a line at the counter, and a bill that&apos;s somehow always higher than the quote. PilotCars was built to end that.</p>
+            <p>We started in Miami — one of the busiest crew layover cities in the US — with one simple promise: no deposit, all-inclusive pricing, verified crew only. Insurance, unlimited local miles, and tolls are included in the daily rate. No surprise charges at drop-off.</p>
+            <p>Today we serve crew at Miami and Orlando, with more hubs on the way. Every member is verified with a valid airline ID. Every price is exactly what you see at booking. That&apos;s the whole model.</p>
           </div>
         </div>
       </section>
 
-      {/* PILLARS */}
+      {/* WHO WE SERVE */}
       <section className="section wrap" style={{ paddingTop: 0 }} data-reveal>
         <div className="section-head">
           <div>
-            <span className="eyebrow eyebrow--ink">How we operate</span>
-            <h2 className="h-section" style={{ marginTop: 10 }}>Three operating rules we will not bend on</h2>
+            <span className="eyebrow eyebrow--ink">Who we serve</span>
+            <h2 className="h-section" style={{ marginTop: 10 }}>If you work in aviation, you qualify.</h2>
+            <p>PilotCars is a closed marketplace. All members must verify their airline ID before booking. No exceptions — this protects the rates and the community.</p>
+          </div>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }} data-stagger>
+          {[
+            { Icon: IconUser, role: "Pilots", detail: "All tiers — regional, mainline, charter" },
+            { Icon: IconShield, role: "Flight Attendants", detail: "Domestic and international routes" },
+            { Icon: IconKey, role: "Mechanics & Technicians", detail: "A&P licensed and line maintenance" },
+            { Icon: IconPaperPlane, role: "Dispatchers", detail: "Flight operations and OCC crew" },
+            { Icon: IconUser, role: "Ground Crew", detail: "Ramp agents, fuelers, loaders" },
+            { Icon: IconShield, role: "Airport Employees", detail: "Any airline-affiliated airport worker" },
+          ].map(({ Icon, role, detail }) => (
+            <div key={role} className="pillar" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div className="pillar-bullet"><Icon width={20} height={20} /></div>
+              <h3 style={{ fontSize: 17 }}>{role}</h3>
+              <p>{detail}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* THREE PILLARS */}
+      <section className="section wrap" style={{ paddingTop: 0 }} data-reveal>
+        <div className="section-head">
+          <div>
+            <span className="eyebrow eyebrow--ink">How we&apos;re different</span>
+            <h2 className="h-section" style={{ marginTop: 10 }}>Three things we will never change</h2>
           </div>
         </div>
         <div className="pillarsgrid" data-stagger>
           {[
-            { Icon: IconShield, h: "Closed membership, no exceptions.", p: "Both sides of the booking are verified airline employees or their direct family. Crew badge + airline payroll match. We'd rather grow slow than open the door." },
-            { Icon: IconPaperPlane, h: "Crew rates always, no surge.", p: "Daily rates are set by hosts, but we cap them inside ranges that hold even on Thanksgiving Eve. No dynamic pricing. No rate hikes when ATC goes ground-stop." },
-            { Icon: IconGlobe, h: "Owned by the people who use it.", p: "40% of equity sits in a crew co-op pool. Every verified host can vest into it. Decisions about rate caps, host disputes, and new-field rollouts go through a crew council with real votes." },
+            {
+              Icon: IconShield,
+              h: "No deposit. Ever.",
+              p: "Traditional rental companies hold $400–$1,500 on your debit card. PilotCars doesn't. Your money stays in your account until the rental is complete.",
+            },
+            {
+              Icon: IconPaperPlane,
+              h: "All-inclusive pricing.",
+              p: "Your daily rate includes full insurance coverage, unlimited local miles, and all tolls. The price at booking is the price you pay. No add-ons at pickup.",
+            },
+            {
+              Icon: IconKey,
+              h: "Verified crew only.",
+              p: "Every member uploads a valid airline ID. This keeps the community trusted and the rates competitive — when liability risk is lower, prices stay lower.",
+            },
           ].map(({ Icon, h, p }) => (
             <div className="pillar" key={h}>
               <div className="pillar-bullet"><Icon width={22} height={22} /></div>
@@ -74,93 +125,117 @@ export default function AboutPage() {
       {/* STATS BAND */}
       <section className="section wrap" style={{ paddingTop: 0 }} data-reveal>
         <div className="statsband">
-          <h2>By the numbers,<br />so far. <em className="editorial-italic">As of May 2026.</em></h2>
+          <h2>Built around<br /><em className="editorial-italic">crew needs.</em></h2>
           <div>
-            <div className="statsband-num" data-count-to="3490">3,490</div>
-            <div className="statsband-label">Cars on the manifest</div>
+            <div className="statsband-num">$0</div>
+            <div className="statsband-label">Deposit required</div>
           </div>
           <div>
-            <div className="statsband-num" data-count-to="38">38</div>
-            <div className="statsband-label">Active outstations</div>
+            <div className="statsband-num">8<span style={{ fontSize: "0.45em", color: "rgba(255,255,255,0.6)", fontWeight: 500 }}>%</span></div>
+            <div className="statsband-label">Referral commission</div>
           </div>
           <div>
-            <div className="statsband-num">12.4k</div>
-            <div className="statsband-label">Verified crew</div>
+            <div className="statsband-num">100<span style={{ fontSize: "0.45em", color: "rgba(255,255,255,0.6)", fontWeight: 500 }}>%</span></div>
+            <div className="statsband-label">Verified crew members</div>
           </div>
         </div>
       </section>
 
-      {/* TEAM */}
-      <section className="section wrap" style={{ paddingTop: 0 }} data-reveal>
-        <div className="section-head">
-          <div>
-            <span className="eyebrow eyebrow--ink">The four behind it</span>
-            <h2 className="h-section" style={{ marginTop: 10 }}>Crew first. Founders second.</h2>
-            <p>The leadership team still flies, fixes, and dispatches. Founder line cards are public on every crew member&apos;s profile.</p>
-          </div>
-        </div>
-        <div className="team" data-stagger>
-          {[
-            { bg: "linear-gradient(135deg, #c9b58a, #4a3a18)", tag: "UAL · 14 yrs · KORD base", name: "Captain David Reyes", role: "Co-founder · CEO · still flying the line" },
-            { bg: "linear-gradient(135deg, #c1cad6, #2b3340)", tag: "DAL · 9 yrs · KATL F/A base", name: "Marisol Pacheco", role: "Co-founder · Head of crew trust" },
-            { bg: "linear-gradient(135deg, #7f9787, #1c2c25)", tag: "UAL · 18 yrs · A&P license", name: "Sam Wakeley", role: "Co-founder · Head of host ops" },
-            { bg: "linear-gradient(135deg, #d8c79a, #8e7029)", tag: "DAL · 11 yrs · OCC dispatch", name: "Theo Park", role: "Co-founder · CTO" },
-          ].map((t) => (
-            <div key={t.name} className="teamcard">
-              <div className="teamcard-photo" style={{ backgroundImage: t.bg }} />
-              <p className="teamcard-bg">{t.tag}</p>
-              <h3 className="teamcard-name">{t.name}</h3>
-              <p className="teamcard-role">{t.role}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* DUAL BLOCK */}
+      {/* REFERRAL HIGHLIGHT */}
       <section className="section wrap" style={{ paddingTop: 0 }} data-reveal>
         <div className="dualblock">
           <div>
             <div className="dualblock-card">
-              <div className="dualblock-icon"><IconKey width={22} height={22} /></div>
-              <h3>List a car.<br /><em className="editorial-italic" style={{ color: "#F0CB6B" }}>Pay for your sim time.</em></h3>
-              <p>The average host earns $642 a month on a single car. Captains use it to cover recurrent. F/As use it to clear their student loans. Mechanics buy tools.</p>
-              <a className="btn-dark" href="#">Learn about hosting <IconArrowRight strokeWidth={2} /></a>
+              <div className="dualblock-icon"><IconPaperPlane width={22} height={22} /></div>
+              <h3>Refer crew.<br /><em className="editorial-italic" style={{ color: "#F0CB6B" }}>Earn 8%.</em></h3>
+              <p>Every time someone you refer completes a booking, you earn 8% commission. No cap. Monthly payouts or account credit — your choice.</p>
+              <Link className="btn-dark" href="/referrals">How referrals work <IconArrowRight strokeWidth={2} /></Link>
             </div>
           </div>
 
           <div className="dualblock-photo" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1600&q=80')" }}>
             <div className="dualblock-photo-content">
-              <span className="eyebrow eyebrow--on-dark">Where we&apos;re going</span>
-              <h2 className="h-section" style={{ marginTop: 14 }}>12 more fields<br />by <em className="editorial-italic">end of &apos;26</em>.</h2>
+              <span className="eyebrow eyebrow--on-dark">What&apos;s included</span>
+              <h2 className="h-section" style={{ marginTop: 14, color: "#fff" }}>
+                Insurance.<br />Miles. Tolls.<br />
+                <em className="editorial-italic" style={{ color: "#F0CB6B" }}>All in.</em>
+              </h2>
             </div>
           </div>
         </div>
       </section>
 
-      {/* PRESS */}
-      <section className="trustband" data-reveal>
-        <div className="trustband-inner">
-          <span className="trustband-label">As covered in</span>
-          <div className="trustband-logos">
-            <span>Aviation Week</span>
-            <span>Flying Magazine</span>
-            <span>The Air Current</span>
-            <span>AINonline</span>
-            <span>Skift</span>
+      {/* COMPARISON */}
+      <section className="section wrap" style={{ paddingTop: 0 }} data-reveal>
+        <div className="section-head">
+          <div>
+            <span className="eyebrow eyebrow--ink">vs. traditional rental</span>
+            <h2 className="h-section" style={{ marginTop: 10 }}>What crew actually care about</h2>
+          </div>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }} data-stagger>
+          {/* PilotCars column */}
+          <div style={{ background: "#1a1a1a", color: "var(--color-on-dark)", borderRadius: "var(--radius-md)", padding: "32px 28px" }}>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 600, letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--color-brass)", marginBottom: 16 }}>PilotCars</div>
+            <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 12 }}>
+              {[
+                "No deposit or hold on your card",
+                "All-inclusive daily rate",
+                "Unlimited local miles",
+                "All tolls included",
+                "Full insurance coverage",
+                "Flexible pickup and return times",
+                "8% referral commission",
+                "Verified crew community",
+              ].map((item) => (
+                <li key={item} style={{ display: "flex", gap: 10, alignItems: "center", fontSize: 14, color: "rgba(255,255,255,0.86)" }}>
+                  <IconCheck width={16} height={16} style={{ color: "#6FCF97", flexShrink: 0 }} />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Traditional column */}
+          <div style={{ background: "var(--color-canvas)", border: "1px solid var(--color-hairline)", borderRadius: "var(--radius-md)", padding: "32px 28px" }}>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 600, letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--color-muted)", marginBottom: 16 }}>Traditional Rental</div>
+            <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 12 }}>
+              {[
+                "$400–$1,500 deposit hold",
+                "Base rate + fees + insurance add-ons",
+                "Mileage limits on many plans",
+                "Tolls billed separately after return",
+                "Insurance sold separately at counter",
+                "Set pickup / return windows",
+                "No referral earnings",
+                "Open to anyone",
+              ].map((item) => (
+                <li key={item} style={{ display: "flex", gap: 10, alignItems: "center", fontSize: 14, color: "var(--color-muted)" }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--color-error)", flexShrink: 0 }}>
+                    <path d="M18 6 6 18M6 6l12 12" />
+                  </svg>
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
 
       {/* FINAL CTA */}
-      <section className="wrap" style={{ padding: "80px 32px" }} data-reveal>
+      <section className="wrap" style={{ padding: "0 32px 80px" }} data-reveal>
         <div className="cta-final">
           <div>
-            <span className="eyebrow eyebrow--ink">Join the manifest</span>
-            <h2 style={{ marginTop: 10 }}>Verified crew?<br /><em className="editorial-italic">Lock in your spot.</em></h2>
+            <span className="eyebrow eyebrow--ink">Ready to book?</span>
+            <h2 style={{ marginTop: 10 }}>
+              No deposit. No hidden fees.<br />
+              <em className="editorial-italic">Just drive.</em>
+            </h2>
           </div>
           <div className="cta-final-actions">
-            <Link className="btn-secondary" href="/contact">Talk to a founder</Link>
-            <a className="btn-primary" href="#" data-magnet data-magnet-strength="14">Join the waitlist</a>
+            <Link className="btn-secondary" href="/contact">Talk to us</Link>
+            <Link className="btn-primary" href="/signup">Create crew account</Link>
           </div>
         </div>
       </section>

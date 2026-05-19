@@ -17,9 +17,9 @@ export default function TopNav() {
   return (
     <header className="topnav">
       <div className="topnav-inner">
-        <Link className="topnav-logo" href="/" aria-label="Pilot Cars home">
+        <Link className="topnav-logo" href="/" aria-label="PilotCars home">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo-pilot.png" alt="Pilot Cars" />
+          <img src="/logo-pilot.png" alt="PilotCars" />
         </Link>
         <nav className="topnav-tabs" aria-label="Primary">
           {TABS.map((t) => {
@@ -36,17 +36,26 @@ export default function TopNav() {
           })}
         </nav>
         <div className="topnav-utils">
-          <a className="topnav-locale" href="#" aria-label="Language">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="9" />
-              <path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" />
-            </svg>{" "}
-            EN
-          </a>
-          <a className="topnav-signin" href="#">Crew sign in</a>
-          <a className="btn-primary" href="#" style={{ height: 40, padding: "0 18px", fontSize: 14 }}>
-            List your car
-          </a>
+          <Link
+            className="topnav-signin"
+            href="/dashboard"
+            aria-label="Dashboard"
+          >
+            Dashboard
+          </Link>
+          <Link
+            className="topnav-signin"
+            href="/login"
+          >
+            Sign in
+          </Link>
+          <Link
+            className="btn-primary"
+            href="/signup"
+            style={{ height: 40, padding: "0 18px", fontSize: 14 }}
+          >
+            Join crew
+          </Link>
         </div>
       </div>
     </header>

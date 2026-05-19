@@ -1,111 +1,335 @@
-import Link from "next/link";
-import VehicleCard from "@/components/VehicleCard";
-import AnimationProvider from "@/components/AnimationProvider";
-import { IconPin, IconCalendar, IconBadge, IconSearch, IconArrowRight } from "@/components/Icons";
+'use client'
 
-export const metadata = { title: "Vehicles — Pilot Cars" };
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import AnimationProvider from '@/components/AnimationProvider'
+import { IconArrowRight } from '@/components/Icons'
 
-function FleetGroup({
-  no, label, title, blurb, count, children,
-}: {
-  no: string; label: string; title: string; blurb: string; count: string; children: React.ReactNode;
-}) {
+// Types matching the API response shapes
+interface Location {
+  id: string
+  name: string
+  city: string
+  address: string
+}
+
+interface Vehicle {
+  id: string
+  make: string
+  model: string
+  year: number
+  color: string
+  daily_rate: number
+  vehicle_type: string
+  features: string[] | null
+  images: string[]
+  location_id: string
+}
+
+const VEHICLE_TYPES = [
+  { value: '', label: 'All types' },
+  { value: 'sedan', label: 'Sedan' },
+  { value: 'suv', label: 'SUV' },
+  { value: 'van', label: 'Van' },
+  { value: 'minivan', label: 'Minivan' },
+]
+
+function VehicleCardLive({ vehicle, locationName }: { vehicle: Vehicle; locationName: string }) {
+  const [imgError, setImgError] = useState(false)
+  const imageUrl = vehicle.images?.[0]
+
   return (
-    <section className="wrap" style={{ padding: "24px 32px 56px" }} data-reveal>
-      <div className="section-head">
-        <div>
-          <span className="eyebrow eyebrow--ink">No. {no} / 05 · {label}</span>
-          <h2 className="h-section" style={{ marginTop: 10 }}>{title}</h2>
-          <p>{blurb}</p>
+    <Link
+      href={`/booking/${vehicle.id}`}
+      className="vcard"
+      style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column' }}
+    >
+      {/* Photo area */}
+      <div className="vcard-photo" style={{ background: 'var(--color-surface-strong)' }}>
+        {imageUrl && !imgError ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={imageUrl}
+            alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          /* Fallback placeholder when no image or load error */
+          <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, color: 'var(--color-muted)' }}>
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.4 }}>
+              <path d="M4 17 6 7h12l2 10H4z" />
+              <circle cx="8" cy="17" r="2" />
+              <circle cx="16" cy="17" r="2" />
+            </svg>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', opacity: 0.5 }}>No photo</span>
+          </div>
+        )}
+        {/* Vehicle type tag */}
+        <span className="vcard-tag" style={{ textTransform: 'capitalize' }}>{vehicle.vehicle_type}</span>
+      </div>
+
+      {/* Body */}
+      <div className="vcard-body">
+        <div className="vcard-titlerow">
+          <span className="vcard-title">{vehicle.year} {vehicle.make} {vehicle.model}</span>
         </div>
-        <a className="linkcta" href="#">{count} on the manifest <IconArrowRight /></a>
+
+        <div className="vcard-meta">{vehicle.color} · {locationName}</div>
+
+        {/* Features */}
+        {vehicle.features && vehicle.features.length > 0 && (
+          <div className="vcard-specs">
+            {vehicle.features.slice(0, 3).map((f) => (
+              <span key={f}>{f}</span>
+            ))}
+          </div>
+        )}
+
+        <div className="vcard-foot">
+          <span className="vcard-price"><b>${vehicle.daily_rate}</b> / day</span>
+          <span className="vcard-go">
+            <IconArrowRight width={14} height={14} />
+          </span>
+        </div>
       </div>
-      <div className="vgrid vgrid-3" data-stagger>
-        {children}
-      </div>
-    </section>
-  );
+    </Link>
+  )
 }
 
 export default function VehiclesPage() {
+  const [locations, setLocations] = useState<Location[]>([])
+  const [vehicles, setVehicles] = useState<Vehicle[]>([])
+  const [selectedLocation, setSelectedLocation] = useState('')
+  const [selectedType, setSelectedType] = useState('')
+  const [loadingLocations, setLoadingLocations] = useState(true)
+  const [loadingVehicles, setLoadingVehicles] = useState(false)
+  const [locationsError, setLocationsError] = useState('')
+  const [vehiclesError, setVehiclesError] = useState('')
+  const [hasSearched, setHasSearched] = useState(false)
+
+  // Fetch locations on mount
+  useEffect(() => {
+    setLoadingLocations(true)
+    fetch('/api/locations')
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.locations) {
+          setLocations(data.locations)
+        } else {
+          setLocationsError('Could not load locations.')
+        }
+      })
+      .catch(() => setLocationsError('Could not load locations.'))
+      .finally(() => setLoadingLocations(false))
+  }, [])
+
+  // Fetch vehicles when filters change (after first search or on mount)
+  function fetchVehicles() {
+    setLoadingVehicles(true)
+    setVehiclesError('')
+    setHasSearched(true)
+
+    const params = new URLSearchParams()
+    if (selectedLocation) params.set('location_id', selectedLocation)
+    if (selectedType) params.set('vehicle_type', selectedType)
+
+    fetch(`/api/vehicles?${params.toString()}`)
+      .then((r) => {
+        if (r.status === 401) {
+          // Not logged in — show a message
+          setVehiclesError('Please sign in to browse available vehicles.')
+          return null
+        }
+        return r.json()
+      })
+      .then((data) => {
+        if (!data) return
+        if (data.vehicles) {
+          setVehicles(data.vehicles)
+        } else {
+          setVehiclesError(data.message ?? 'Could not load vehicles.')
+        }
+      })
+      .catch(() => setVehiclesError('Could not load vehicles. Please try again.'))
+      .finally(() => setLoadingVehicles(false))
+  }
+
+  // Get location name by id
+  function locationName(id: string) {
+    const loc = locations.find((l) => l.id === id)
+    return loc ? `${loc.city} — ${loc.name}` : id
+  }
+
   return (
     <main>
       <AnimationProvider />
 
+      {/* Page header */}
       <section className="pagehead wrap" data-hero-reveal>
         <div className="pagehead-row">
           <div>
-            <span className="eyebrow">The manifest</span>
-            <h1 style={{ marginTop: 12 }}>The crew <em className="editorial-italic">manifest</em></h1>
-            <p className="breadcrumb"><Link href="/">Home</Link> &nbsp;/&nbsp; Vehicles</p>
+            <span className="eyebrow">Available fleet</span>
+            <h1 style={{ marginTop: 12 }}>
+              Browse the <em className="editorial-italic">fleet</em>
+            </h1>
+            <p className="breadcrumb">
+              <Link href="/">Home</Link> &nbsp;/&nbsp; Vehicles
+            </p>
           </div>
-          <p>Eleven cars from verified crew across the network. Two sedans, two SUVs, two minivans, three passenger vans, two cargo vans — every one hosted by an airline employee, every booking inside the closed marketplace.</p>
+          <p>
+            Sedans, SUVs, vans, and minivans — all available at verified crew locations.
+            No deposit. All-inclusive pricing. Unlimited miles and tolls.
+          </p>
         </div>
       </section>
 
-      {/* Compact search dock */}
-      <section className="wrap" style={{ paddingTop: 24 }} data-reveal>
-        <div className="searchdock" style={{ boxShadow: "var(--shadow-float)", borderRadius: "var(--radius-md)", margin: 0, padding: "18px 22px" }}>
-          <div className="searchdock-row">
-            <div className="searchdock-cell">
-              <span className="searchdock-label">Pick-up field</span>
-              <div className="searchdock-value"><IconPin /><input type="text" defaultValue="KORD · Chicago O'Hare" /></div>
-            </div>
-            <div className="searchdock-cell">
-              <span className="searchdock-label">Drop-off field</span>
-              <div className="searchdock-value"><IconPin /><input type="text" defaultValue="Same as pick-up" /></div>
-            </div>
-            <div className="searchdock-cell">
-              <span className="searchdock-label">Pick-up</span>
-              <div className="searchdock-value"><IconCalendar /><input type="text" defaultValue="May 22 · 14:30" /></div>
-            </div>
-            <div className="searchdock-cell">
-              <span className="searchdock-label">Drop-off</span>
-              <div className="searchdock-value"><IconCalendar /><input type="text" defaultValue="May 25 · 09:00" /></div>
-            </div>
-            <div className="searchdock-cell">
-              <span className="searchdock-label">Crew ID</span>
-              <div className="searchdock-value">
-                <IconBadge />
-                <select defaultValue="UAL — Pilot">
-                  <option>UAL — Pilot</option>
-                  <option>AAL — Flight attendant</option>
-                  <option>DAL — Mechanic</option>
-                </select>
+      {/* Filter bar */}
+      <section className="wrap" style={{ paddingTop: 32, paddingBottom: 8 }} data-reveal>
+        <div
+          className="contactform"
+          style={{ padding: '20px 24px', display: 'flex', gap: 16, alignItems: 'flex-end', flexWrap: 'wrap' }}
+        >
+          {/* Location dropdown — from database */}
+          <div className="formfield" style={{ flex: '1 1 220px', minWidth: 180 }}>
+            <label htmlFor="location-filter">Pick-up location</label>
+            {loadingLocations ? (
+              <div style={{ height: 48, display: 'flex', alignItems: 'center', fontSize: 14, color: 'var(--color-muted)' }}>
+                Loading locations…
               </div>
-            </div>
-            <button className="searchdock-submit" type="button"><IconSearch /> Update</button>
+            ) : locationsError ? (
+              <div style={{ fontSize: 13, color: 'var(--color-error)', paddingTop: 8 }}>{locationsError}</div>
+            ) : (
+              <select
+                id="location-filter"
+                value={selectedLocation}
+                onChange={(e) => setSelectedLocation(e.target.value)}
+              >
+                <option value="">All locations</option>
+                {locations.map((loc) => (
+                  <option key={loc.id} value={loc.id}>
+                    {loc.city} — {loc.name}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
+
+          {/* Vehicle type filter */}
+          <div className="formfield" style={{ flex: '1 1 180px', minWidth: 160 }}>
+            <label htmlFor="type-filter">Vehicle type</label>
+            <select
+              id="type-filter"
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.target.value)}
+            >
+              {VEHICLE_TYPES.map((t) => (
+                <option key={t.value} value={t.value}>
+                  {t.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Search button */}
+          <button
+            className="btn-primary"
+            type="button"
+            onClick={fetchVehicles}
+            disabled={loadingVehicles}
+            style={{ height: 48, padding: '0 28px', flexShrink: 0, opacity: loadingVehicles ? 0.65 : 1, cursor: loadingVehicles ? 'not-allowed' : 'pointer' }}
+          >
+            {loadingVehicles ? 'Searching…' : 'Search vehicles'}
+          </button>
         </div>
       </section>
 
-      <FleetGroup no="01" label="Sedans" title="Sedans" blurb="Quiet, efficient. The crew default for solo layovers." count="2">
-        <VehicleCard silhouette="sedan" tag="Sedan" title="Toyota Corolla LE Hybrid" rating="4.91" meta="0.8 mi from KORD · Marcus T. · Dispatcher" specs={["5 seats", "Auto", "Hybrid · 50 mpg"]} price="$38" background="linear-gradient(135deg, #8b2222 0%, #3a0d0d 100%)" redCorolla />
-        <VehicleCard silhouette="sedan" tag="Sedan" title="Nissan Sentra SV" rating="4.84" meta="1.4 mi from KATL · Priya M. · Pilot" specs={["5 seats", "CVT", "Gas · 33 mpg"]} price="$36" background="linear-gradient(135deg, #4d5a68 0%, #1f262e 100%)" />
-      </FleetGroup>
+      {/* Results */}
+      <section className="section wrap" style={{ paddingTop: 24 }} data-reveal>
 
-      <FleetGroup no="02" label="SUVs" title="SUVs" blurb="Higher ride, more weather. AWD where the regional bases need it." count="2">
-        <VehicleCard silhouette="suv" tag="SUV" title="Nissan Rogue SV · AWD" rating="4.92" meta="0.6 mi from KORD · Captain Reyes" specs={["5 seats", "CVT", "AWD"]} price="$56" background="linear-gradient(135deg, #3a5566 0%, #19262e 100%)" />
-        <VehicleCard silhouette="suv" tag="SUV" title="Nissan Kicks SR" rating="4.86" meta="1.1 mi from KLAX · Karen H. · F/A" specs={["5 seats", "CVT", "FWD · 36 mpg"]} price="$46" background="linear-gradient(135deg, #a0683d 0%, #2e1a0c 100%)" />
-      </FleetGroup>
+        {/* Error state */}
+        {vehiclesError && (
+          <div style={{ padding: '16px 20px', background: 'rgba(193, 53, 21, 0.08)', border: '1px solid rgba(193, 53, 21, 0.25)', borderRadius: 'var(--radius-sm)', color: 'var(--color-error)', fontSize: 14, marginBottom: 24 }}>
+            {vehiclesError}
+            {vehiclesError.includes('sign in') && (
+              <> <Link href="/login" style={{ color: 'var(--color-error)', textDecoration: 'underline', fontWeight: 600 }}>Sign in here</Link>.</>
+            )}
+          </div>
+        )}
 
-      <FleetGroup no="03" label="Mini-vans" title="Mini-vans" blurb="Sliding doors, second-row captains. For crew traveling with family." count="2">
-        <VehicleCard silhouette="minivan" tag="Mini-van" title="Honda Odyssey EX-L" rating="4.88" meta="2.3 mi from KDEN · Sam W. · Mechanic" specs={["8 seats", "Auto", "V6 · 28 mpg"]} price="$72" background="linear-gradient(135deg, #5a6b80 0%, #1f2935 100%)" />
-        <VehicleCard silhouette="minivan" tag="Mini-van" title="Kia Carnival SX" rating="4.90" meta="1.8 mi from KBOS · Jamie R. · F/A" specs={["8 seats", "Auto", "V6 · 26 mpg"]} price="$78" background="linear-gradient(135deg, #7a6450 0%, #2a2218 100%)" />
-      </FleetGroup>
+        {/* Loading skeleton */}
+        {loadingVehicles && (
+          <div className="vgrid vgrid-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="vcard" style={{ opacity: 0.4 }}>
+                <div className="vcard-photo" style={{ background: 'var(--color-surface-strong)', animation: 'pulse 1.5s ease-in-out infinite alternate' }} />
+                <div className="vcard-body">
+                  <div style={{ height: 18, background: 'var(--color-surface-strong)', borderRadius: 4, marginBottom: 10 }} />
+                  <div style={{ height: 14, background: 'var(--color-surface-strong)', borderRadius: 4, width: '60%' }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
-      <FleetGroup no="04" label="Passenger vans" title="Passenger vans" blurb="Eight to fifteen seats — for the whole reserve crew on a single van." count="3">
-        <VehicleCard silhouette="passenger" tag="Passenger Van" title="Mercedes Sprinter 2500 · 15-passenger" rating="4.95" meta="1.6 mi from KORD · Pilot Fleet ops" specs={["15 seats", "Auto", "Diesel · High roof"]} price="$165" background="linear-gradient(135deg, #5a6068 0%, #20232a 100%)" />
-        <VehicleCard silhouette="passenger" tag="Passenger Van" title="Mercedes Sprinter 2500 · 12-passenger" rating="4.93" meta="1.6 mi from KORD · Pilot Fleet ops" specs={["12 seats", "Auto", "Diesel · Standard roof"]} price="$148" background="linear-gradient(135deg, #3d4f64 0%, #14202c 100%)" />
-        <VehicleCard silhouette="passenger" tag="Passenger Van" title="Mercedes Metris Passenger" rating="4.89" meta="2.0 mi from KATL · Pilot Fleet ops" specs={["8 seats", "Auto", "Gas · Mid-size van"]} price="$96" background="linear-gradient(135deg, #8a7e58 0%, #2e2a1d 100%)" />
-      </FleetGroup>
+        {/* Vehicles grid */}
+        {!loadingVehicles && hasSearched && vehicles.length > 0 && (
+          <>
+            <div style={{ marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span className="eyebrow eyebrow--ink">
+                {vehicles.length} {vehicles.length === 1 ? 'vehicle' : 'vehicles'} available
+              </span>
+            </div>
+            <div className="vgrid vgrid-3" data-stagger>
+              {vehicles.map((v) => (
+                <VehicleCardLive
+                  key={v.id}
+                  vehicle={v}
+                  locationName={locationName(v.location_id)}
+                />
+              ))}
+            </div>
+          </>
+        )}
 
-      <FleetGroup no="05" label="Cargo vans" title="Cargo vans" blurb="Ramp moves, instrument crates, the occasional bike trip. Diesel-Mercedes muscle." count="2">
-        <VehicleCard silhouette="cargo" tag="Cargo Van" title='Mercedes Sprinter Cargo 2500 · 170″ High roof' rating="4.91" meta="3.1 mi from KMSP · Pilot Fleet ops" specs={["2 seats", "Auto", "Diesel · 533 cu ft"]} price="$142" background="linear-gradient(135deg, #4a5260 0%, #1a1f26 100%)" />
-        <VehicleCard silhouette="cargo" tag="Cargo Van" title="Mercedes Metris Cargo Worker" rating="4.87" meta="1.4 mi from KLAX · Pilot Fleet ops" specs={["2 seats", "Auto", "Gas · 186 cu ft"]} price="$88" background="linear-gradient(135deg, #5e6240 0%, #20221a 100%)" />
-      </FleetGroup>
+        {/* Empty state */}
+        {!loadingVehicles && hasSearched && !vehiclesError && vehicles.length === 0 && (
+          <div style={{ textAlign: 'center', padding: '64px 24px' }}>
+            <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'var(--color-surface-strong)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--color-muted)' }}>
+                <path d="M4 17 6 7h12l2 10H4z" />
+                <circle cx="8" cy="17" r="2" />
+                <circle cx="16" cy="17" r="2" />
+              </svg>
+            </div>
+            <h2 style={{ fontSize: 22, fontWeight: 500, margin: '0 0 8px' }}>No vehicles found</h2>
+            <p style={{ color: 'var(--color-muted)', maxWidth: 360, margin: '0 auto' }}>
+              Try a different location or vehicle type. New vehicles are added as crew members join.
+            </p>
+          </div>
+        )}
+
+        {/* Initial prompt — before first search */}
+        {!loadingVehicles && !hasSearched && !vehiclesError && (
+          <div style={{ textAlign: 'center', padding: '64px 24px' }}>
+            <p style={{ color: 'var(--color-muted)', fontSize: 16 }}>
+              Select a location and click <strong>Search vehicles</strong> to browse the fleet.
+            </p>
+            <p style={{ color: 'var(--color-muted)', fontSize: 14, marginTop: 8 }}>
+              You must be signed in to view available vehicles.{' '}
+              <Link href="/login" style={{ color: 'var(--color-ink)', fontWeight: 500, textDecoration: 'underline' }}>
+                Sign in
+              </Link>{' '}
+              or{' '}
+              <Link href="/signup" style={{ color: 'var(--color-ink)', fontWeight: 500, textDecoration: 'underline' }}>
+                create an account
+              </Link>.
+            </p>
+          </div>
+        )}
+      </section>
 
       <div style={{ height: 64 }} />
     </main>
-  );
+  )
 }
