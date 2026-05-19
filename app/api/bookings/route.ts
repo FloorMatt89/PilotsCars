@@ -153,7 +153,6 @@ export async function GET() {
       total_price,
       notes,
       created_at,
-      updated_at,
       vehicles (
         id, make, model, year, color, vehicle_type, daily_rate
       ),

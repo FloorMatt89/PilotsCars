@@ -20,7 +20,6 @@ export async function GET() {
     .from('referrals')
     .select(`
       id,
-      referral_code,
       status,
       commission_earned,
       paid_at,
@@ -49,10 +48,12 @@ export async function GET() {
     0
   )
 
-  // 4. Surface the first referral_code as the user's code (each user gets one referral row per referral)
-  //    The user's own referral code is the one they share with others.
-  //    If the user has no referral rows yet, their code isn't generated — return null.
-  const referralCode = referrals && referrals.length > 0 ? referrals[0].referral_code : null
+  // 4. Generate a referral code for this user (referral_code column not yet in DB)
+  //    For now, use a simple code based on user ID
+  const generateReferralCode = (userId: string) => {
+    return `PILOT-${userId.substring(0, 6).toUpperCase()}`
+  }
+  const referralCode = generateReferralCode(user.id)
 
   console.log('GET /api/referrals — Done')
   return NextResponse.json(
