@@ -48,7 +48,19 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // 2. Fetch profile row using admin client (bypasses RLS)
+  // 2. Set the session (this persists it to cookies for SSR client)
+  if (authData.session) {
+    const { error: sessionError } = await supabase.auth.setSession(authData.session)
+    if (sessionError) {
+      console.log('POST /api/auth/login — setSession error:', sessionError.message)
+      return NextResponse.json(
+        { error: 'session_failed', message: 'Failed to save session.' },
+        { status: 500 }
+      )
+    }
+  }
+
+  // 3. Fetch profile row using admin client (bypasses RLS)
   const adminClient = createAdminClient()
   const { data: profile, error: profileError } = await adminClient
     .from('users')
@@ -65,7 +77,6 @@ export async function POST(request: NextRequest) {
   }
 
   const response: Record<string, unknown> = {
-    token: authData.session.access_token,
     user: {
       id: profile.id,
       email: profile.email,

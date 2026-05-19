@@ -74,7 +74,16 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // 2. Create profile row in public.users
+  // 2. Set the session (this persists it to cookies for SSR client)
+  if (authData.session) {
+    const { error: sessionError } = await supabase.auth.setSession(authData.session)
+    if (sessionError) {
+      console.log('POST /api/auth/signup — setSession error:', sessionError.message)
+      // Continue with signup even if session setting fails (user can log in manually)
+    }
+  }
+
+  // 3. Create profile row in public.users
   const phoneTrimmed = phone && typeof phone === 'string' ? phone.trim() : null
   const { data: profile, error: profileError } = await supabase
     .from('users')
@@ -100,7 +109,6 @@ export async function POST(request: NextRequest) {
   console.log('POST /api/auth/signup — Done')
   return NextResponse.json(
     {
-      token: authData.session?.access_token ?? null,
       user: {
         id: profile.id,
         email: profile.email,
