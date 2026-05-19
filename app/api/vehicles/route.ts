@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
-const SIGNED_URL_EXPIRES_IN = 3600 // 1 hour
-
 // GET /api/vehicles?location_id=XXX&vehicle_type=sedan
 // Returns available vehicles with signed image URLs from Supabase Storage.
 export async function GET(request: NextRequest) {
@@ -21,10 +19,14 @@ export async function GET(request: NextRequest) {
   const location_id = searchParams.get('location_id')
   const vehicle_type = searchParams.get('vehicle_type')
 
-  // 3. Build query — only available vehicles
+  // 3. Build query — only available vehicles.
+  // NOTE: image_storage_path is intentionally not selected — the column does
+  // not exist in the live database (migration 0002 was never applied), so
+  // selecting it 500s the whole request. No vehicle images are seeded yet;
+  // the UI shows a "No photo" placeholder.
   let query = supabase
     .from('vehicles')
-    .select('id, make, model, year, color, daily_rate, vehicle_type, features, mileage, image_storage_path, location_id')
+    .select('id, make, model, year, color, daily_rate, vehicle_type, features, mileage, location_id')
     .eq('is_available', true)
 
   if (location_id) {
@@ -41,36 +43,20 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'fetch_failed', message: error.message }, { status: 500 })
   }
 
-  // 4. Generate signed URLs for vehicle images
-  const vehiclesWithImages = await Promise.all(
-    (vehicles ?? []).map(async (vehicle) => {
-      let images: string[] = []
-
-      if (vehicle.image_storage_path) {
-        const { data: signedUrlData, error: urlError } = await supabase.storage
-          .from('vehicles-images')
-          .createSignedUrl(vehicle.image_storage_path, SIGNED_URL_EXPIRES_IN)
-
-        if (!urlError && signedUrlData?.signedUrl) {
-          images = [signedUrlData.signedUrl]
-        }
-      }
-
-      return {
-        id: vehicle.id,
-        make: vehicle.make,
-        model: vehicle.model,
-        year: vehicle.year,
-        color: vehicle.color,
-        daily_rate: vehicle.daily_rate,
-        vehicle_type: vehicle.vehicle_type,
-        features: vehicle.features,
-        mileage: vehicle.mileage,
-        location_id: vehicle.location_id,
-        images,
-      }
-    })
-  )
+  // 4. Shape the response. No images are stored yet, so images is always [].
+  const vehiclesWithImages = (vehicles ?? []).map((vehicle) => ({
+    id: vehicle.id,
+    make: vehicle.make,
+    model: vehicle.model,
+    year: vehicle.year,
+    color: vehicle.color,
+    daily_rate: vehicle.daily_rate,
+    vehicle_type: vehicle.vehicle_type,
+    features: vehicle.features,
+    mileage: vehicle.mileage,
+    location_id: vehicle.location_id,
+    images: [] as string[],
+  }))
 
   console.log('GET /api/vehicles — Done')
   return NextResponse.json({ vehicles: vehiclesWithImages }, { status: 200 })

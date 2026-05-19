@@ -627,7 +627,8 @@ a.legal {
   width: min(1160px, calc(100% - 64px));
   background: var(--color-canvas);
   border-radius: var(--radius-md);
-  padding: 20px 24px 22px;
+  /* Fluid padding so the dock breathes on desktop and tightens on phones. */
+  padding: clamp(14px, 1.8vw, 20px) clamp(14px, 2.2vw, 24px);
   box-shadow:
     rgba(0, 0, 0, 0.02) 0 0 0 1px,
     rgba(0, 0, 0, 0.22) 0 18px 50px,
@@ -636,13 +637,13 @@ a.legal {
 
 .searchdock-row {
   display: grid;
-  grid-template-columns: 1.1fr 1.1fr 1fr 1fr 1fr auto;
+  grid-template-columns: 1fr 1fr 1.25fr 1.25fr 1fr auto;
   gap: 0;
   align-items: stretch;
 }
 
 .searchdock-cell {
-  padding: 6px 18px;
+  padding: 6px clamp(10px, 1.4vw, 18px);
   border-right: 1px solid var(--color-hairline);
   display: flex;
   flex-direction: column;
@@ -661,19 +662,19 @@ a.legal {
 
 .searchdock-label {
   font-family: var(--font-display);
-  font-size: 11px;
+  font-size: clamp(9.5px, 0.85vw, 10.5px);
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.07em;
   color: var(--color-muted);
 }
 
 .searchdock-value {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   font-family: var(--font-display);
-  font-size: 15px;
+  font-size: clamp(13px, 1.05vw, 14px);
   color: var(--color-ink);
 }
 
@@ -690,15 +691,76 @@ a.legal {
   outline: 0;
   background: transparent;
   font-family: var(--font-display);
-  font-size: 15px;
+  font-size: clamp(13px, 1.05vw, 14px);
   color: var(--color-ink);
   width: 100%;
   min-width: 0;
-  padding: 0;
+  /* Breathing room so the text never collides with the leading icon
+     or the native calendar/time picker control. */
+  padding: 5px 2px;
+  line-height: 1.35;
+  min-height: 30px;
+}
+
+.searchdock-value select {
+  /* Native select needs a touch more right room for its chevron. */
+  padding-right: 8px;
+  cursor: pointer;
+}
+
+/* Native date/time picker affordance: give the calendar/clock icon
+   space and make it clearly interactive. */
+.searchdock-value input[type="datetime-local"],
+.searchdock-value input[type="date"],
+.searchdock-value input[type="time"] {
+  cursor: text;
+}
+
+.searchdock-value input::-webkit-calendar-picker-indicator {
+  margin-left: 6px;
+  opacity: 0.55;
+  cursor: pointer;
+  transition: opacity 120ms ease;
+}
+
+.searchdock-value input::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
 }
 
 .searchdock-value input::placeholder {
   color: var(--color-muted-soft);
+}
+
+.searchdock-value input:read-only {
+  color: var(--color-muted);
+  cursor: default;
+}
+
+/* Helper + validation copy for the search dock (taste rule: error text
+   lives below the input row, helper text always present in markup). */
+.searchdock-foot .searchdock-help {
+  color: var(--color-muted-soft);
+}
+
+.searchdock-error {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-error);
+}
+
+.searchdock-error svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+.searchdock-submit:active {
+  transform: translateY(1px);
 }
 
 .searchdock-submit {
@@ -710,13 +772,13 @@ a.legal {
   background: var(--color-primary);
   color: var(--color-on-primary);
   font-family: var(--font-display);
-  font-size: 14px;
+  font-size: clamp(13px, 1vw, 14px);
   font-weight: 500;
   border: 0;
   border-radius: var(--radius-sm);
-  padding: 0 22px;
-  height: 48px;
-  min-width: 120px;
+  padding: 0 clamp(16px, 1.8vw, 22px);
+  height: 46px;
+  min-width: 116px;
   cursor: pointer;
   transition: background 120ms ease;
   margin-left: 16px;
@@ -732,12 +794,12 @@ a.legal {
 }
 
 .searchdock-foot {
-  margin-top: 16px;
+  margin-top: 14px;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: clamp(8px, 1.2vw, 14px);
   font-family: var(--font-display);
-  font-size: 13px;
+  font-size: clamp(11px, 1vw, 12.5px);
   color: var(--color-muted);
   flex-wrap: wrap;
 }
@@ -745,13 +807,14 @@ a.legal {
 .seg-pills {
   display: inline-flex;
   gap: 6px;
+  flex-wrap: wrap;
 }
 
 .seg-pill {
   font-family: var(--font-display);
-  font-size: 13px;
+  font-size: clamp(11px, 1vw, 12.5px);
   font-weight: 500;
-  padding: 6px 14px;
+  padding: 5px clamp(10px, 1.4vw, 14px);
   border-radius: var(--radius-full);
   background: transparent;
   color: var(--color-muted);
@@ -2557,19 +2620,52 @@ a.legal {
 
   .searchdock-row {
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: 10px 14px;
   }
 
   .searchdock-cell {
     border-right: 0;
     border-bottom: 1px solid var(--color-hairline);
-    padding: 10px 12px;
+    padding: 9px 4px;
+  }
+
+  .searchdock-cell:first-child {
+    padding-left: 4px;
+  }
+
+  /* On touch screens, 16px stops iOS from auto-zooming on focus, and a
+     taller control is an easier tap target. */
+  .searchdock-value input,
+  .searchdock-value select {
+    font-size: 16px;
+    min-height: 38px;
   }
 
   .searchdock-submit {
     margin-left: 0;
     grid-column: 1 / -1;
     width: 100%;
+    height: 50px;
+    font-size: 15px;
+  }
+}
+
+/* Phones: one field per row so date/time pickers never get squashed. */
+@media (max-width: 600px) {
+  .searchdock-row {
+    grid-template-columns: 1fr;
+  }
+
+  .searchdock-cell {
+    padding: 8px 2px;
+  }
+
+  .searchdock-cell:last-of-type {
+    border-bottom: 0;
+  }
+
+  .searchdock-foot {
+    gap: 8px 12px;
   }
 }
 

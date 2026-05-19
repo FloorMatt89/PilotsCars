@@ -132,15 +132,45 @@ export default function VehiclesPage() {
       .finally(() => setLoadingLocations(false))
   }, [])
 
-  // Fetch vehicles when filters change (after first search or on mount)
-  function fetchVehicles() {
+  // Read filters passed from the home search dock (e.g. /vehicles?location_id=…)
+  // and run the search automatically so the home Search button works.
+  // Untrusted URL input is validated before it ever reaches the API.
+  useEffect(() => {
+    const sp = new URLSearchParams(window.location.search)
+    const rawLoc = sp.get('location_id') ?? ''
+    const rawType = sp.get('vehicle_type') ?? ''
+
+    // location_id must look like a UUID; vehicle_type must be a known value.
+    const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+    const loc = uuidRe.test(rawLoc) ? rawLoc : ''
+    const allowedTypes = VEHICLE_TYPES.map((t) => t.value)
+    const type = allowedTypes.includes(rawType) ? rawType : ''
+
+    if (rawLoc && !loc) {
+      setVehiclesError('That search link was invalid. Showing all locations instead.')
+    }
+
+    if (loc || type) {
+      setSelectedLocation(loc)
+      setSelectedType(type)
+      fetchVehicles(loc, type)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Fetch vehicles when filters change (after first search or on mount).
+  // Optional overrides let callers search before React state has flushed.
+  function fetchVehicles(locOverride?: string, typeOverride?: string) {
+    const loc = locOverride ?? selectedLocation
+    const type = typeOverride ?? selectedType
+
     setLoadingVehicles(true)
     setVehiclesError('')
     setHasSearched(true)
 
     const params = new URLSearchParams()
-    if (selectedLocation) params.set('location_id', selectedLocation)
-    if (selectedType) params.set('vehicle_type', selectedType)
+    if (loc) params.set('location_id', loc)
+    if (type) params.set('vehicle_type', type)
 
     const url = `/api/vehicles?${params.toString()}`
     console.log('Vehicles: Fetching with URL:', url)
@@ -215,6 +245,10 @@ export default function VehiclesPage() {
               </div>
             ) : locationsError ? (
               <div style={{ fontSize: 13, color: 'var(--color-error)', paddingTop: 8 }}>{locationsError}</div>
+            ) : locations.length === 0 ? (
+              <div style={{ fontSize: 13, color: 'var(--color-muted)', paddingTop: 8 }}>
+                No locations available yet.
+              </div>
             ) : (
               <select
                 id="location-filter"
@@ -251,12 +285,20 @@ export default function VehiclesPage() {
           <button
             className="btn-primary"
             type="button"
-            onClick={fetchVehicles}
+            onClick={() => fetchVehicles()}
             disabled={loadingVehicles}
             style={{ height: 48, padding: '0 28px', flexShrink: 0, opacity: loadingVehicles ? 0.65 : 1, cursor: loadingVehicles ? 'not-allowed' : 'pointer' }}
           >
             {loadingVehicles ? 'Searching…' : 'Search vehicles'}
           </button>
+
+          <p
+            className="body-sm"
+            style={{ flexBasis: '100%', margin: 0, color: 'var(--color-muted-soft)', fontSize: 13 }}
+          >
+            Pick a location and vehicle type, then search. All rates are
+            all-inclusive — insurance, unlimited miles, and tolls. Verified crew only.
+          </p>
         </div>
       </section>
 

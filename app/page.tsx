@@ -3,10 +3,9 @@ import VehicleCard from "@/components/VehicleCard";
 import AnimationProvider from "@/components/AnimationProvider";
 import ScrollVideoStory from "@/components/ScrollVideoStory";
 import AirlineMarquee from "@/components/AirlineMarquee";
-import {
-  IconPin, IconCalendar, IconBadge, IconSearch,
-  IconArrowRight, IconPaperPlane,
-} from "@/components/Icons";
+import SearchDock from "@/components/SearchDock";
+import HeroSignInLink from "@/components/HeroSignInLink";
+import { IconArrowRight, IconPaperPlane } from "@/components/Icons";
 
 const FIELDS = [
   ["KORD", "Chicago O'Hare", "312"],
@@ -71,9 +70,7 @@ export default function HomePage() {
             <Link href="/referrals" className="btn-dark" style={{ height: 48, padding: "0 24px", fontSize: 15 }}>
               Earn 8% — Refer crew <IconArrowRight width={14} height={14} strokeWidth={2} />
             </Link>
-            <Link href="/login" style={{ display: "inline-flex", alignItems: "center", height: 48, padding: "0 20px", fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 500, color: "rgba(255,255,255,0.85)", textDecoration: "none" }}>
-              Sign in
-            </Link>
+            <HeroSignInLink />
           </div>
         </div>
 
@@ -92,63 +89,8 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Search dock */}
-        <div className="searchdock" data-hero-reveal>
-          <div className="searchdock-row">
-            <div className="searchdock-cell">
-              <span className="searchdock-label">Pick-up field</span>
-              <div className="searchdock-value">
-                <IconPin /><input type="text" placeholder="ICAO or city" defaultValue="KORD · Chicago O'Hare" />
-              </div>
-            </div>
-            <div className="searchdock-cell">
-              <span className="searchdock-label">Drop-off field</span>
-              <div className="searchdock-value">
-                <IconPin /><input type="text" defaultValue="Same as pick-up" />
-              </div>
-            </div>
-            <div className="searchdock-cell">
-              <span className="searchdock-label">Pick-up date &amp; time</span>
-              <div className="searchdock-value">
-                <IconCalendar /><input type="text" defaultValue="May 22 · 14:30" />
-              </div>
-            </div>
-            <div className="searchdock-cell">
-              <span className="searchdock-label">Drop-off date &amp; time</span>
-              <div className="searchdock-value">
-                <IconCalendar /><input type="text" defaultValue="May 25 · 09:00" />
-              </div>
-            </div>
-            <div className="searchdock-cell">
-              <span className="searchdock-label">Crew ID</span>
-              <div className="searchdock-value">
-                <IconBadge />
-                <select defaultValue="UAL — Pilot">
-                  <option>UAL — Pilot</option>
-                  <option>AAL — Flight attendant</option>
-                  <option>DAL — Mechanic</option>
-                  <option>Family member</option>
-                </select>
-              </div>
-            </div>
-            <Link href="/vehicles" className="searchdock-submit" style={{ textDecoration: "none" }}>
-              <IconSearch /> Search
-            </Link>
-          </div>
-          <div className="searchdock-foot">
-            <span>Trip type</span>
-            <div className="seg-pills">
-              <span className="seg-pill is-active">Round trip</span>
-              <span className="seg-pill">One way</span>
-              <span className="seg-pill">Monthly</span>
-            </div>
-            <span style={{ marginLeft: "auto" }}>Filter</span>
-            <div className="seg-pills">
-              <span className="seg-pill is-active">Self-drive</span>
-              <span className="seg-pill">With driver</span>
-            </div>
-          </div>
-        </div>
+        {/* Search dock — live, database-backed */}
+        <SearchDock />
       </section>
 
       {/* ============ AIRLINE LOGO MARQUEE (between hero & scroll story) ============ */}
