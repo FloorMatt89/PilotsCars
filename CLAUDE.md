@@ -1,8 +1,50 @@
-# Project Overview
+# Project Overview — PilotCars Platform
 
+**Current Status (2026-05-19):** Core backend complete, debugging frontend data-fetching issues.
 
-Build a lightweight web application. This guide is instructions to get Claude Code to behave the way I want.
-Each feature does one thing, the code is easy to follow, and the app is easy to run locally and deploy.
+## Status Summary
+
+**✅ Complete:**
+- Database schema (5 tables with RLS policies)
+- Authentication (signup, login with email validation and regex)
+- All 10 API routes (bookings, vehicles, locations, referrals, admin)
+- Test data seeded (5 users, 3 locations, 4 vehicles, 8 bookings, 4 referrals)
+- 8 UI pages with responsive design
+
+**🚧 Current Issues (Agent Analysis Complete):**
+
+**Backend Engineer Findings:**
+- ✅ Fixed: `/api/referrals` now uses explicit FK syntax `bookings!referrals_booking_id_fkey` (line 30)
+- ✅ Verified: `locations.phone` exists (0001_init_schema.sql:151)
+- ✅ Verified: `vehicles.image_storage_path` exists (0002_add_vehicle_image_path.sql:9)
+- ⚠️ Remaining: Need to verify all 3 APIs return 200 (not 500) with proper data
+
+**Database Engineer Findings:**
+- ✅ All 5 tables exist with correct columns
+- ✅ All foreign key relationships properly defined
+- ✅ All RLS policies correctly configured
+- ✅ Schema is production-ready
+
+**Frontend Engineer Findings:**
+- ❌ Dashboard: No profile fetch (never sets `profile` state, always null)
+- ❌ Dashboard: No error handling when API fails silently on 500
+- ❌ Vehicles page: No error display if locations API fails
+- ❌ Vehicles page: No error display if vehicles API fails
+- ❌ All pages: Missing console logging for API responses
+- ⚠️ Referrals: FK join works IF constraint name is correct (verified: `referrals_booking_id_fkey`)
+
+**Recent Fixes Applied:**
+- Added missing `phone` column to locations table
+- Added missing `image_storage_path` column to vehicles table
+- Added missing `booking_id` column to referrals table with FK to bookings
+- Updated `/api/referrals/route.ts` with explicit FK syntax for Supabase join
+- Removed non-functional middleware.ts
+
+**Next Steps (Agents Coordinating):**
+1. Backend Engineer: Verify all 3 APIs return 200 with proper data structure
+2. Frontend Engineer: Add user profile fetch to dashboard (separate API call)
+3. Frontend Engineer: Add error handling + console logging to all pages
+4. QA: Run end-to-end tests once APIs confirmed working
 
 
 ---

@@ -111,16 +111,24 @@ export default function VehiclesPage() {
   // Fetch locations on mount
   useEffect(() => {
     setLoadingLocations(true)
+    console.log('Vehicles: Fetching locations...')
     fetch('/api/locations')
-      .then((r) => r.json())
+      .then((r) => {
+        console.log('Vehicles: Locations API response status:', r.status)
+        return r.json()
+      })
       .then((data) => {
+        console.log('Vehicles: Locations data received:', data)
         if (data.locations) {
           setLocations(data.locations)
         } else {
           setLocationsError('Could not load locations.')
         }
       })
-      .catch(() => setLocationsError('Could not load locations.'))
+      .catch((error) => {
+        console.error('Vehicles: Error fetching locations:', error)
+        setLocationsError('Could not load locations.')
+      })
       .finally(() => setLoadingLocations(false))
   }, [])
 
@@ -134,8 +142,12 @@ export default function VehiclesPage() {
     if (selectedLocation) params.set('location_id', selectedLocation)
     if (selectedType) params.set('vehicle_type', selectedType)
 
-    fetch(`/api/vehicles?${params.toString()}`)
+    const url = `/api/vehicles?${params.toString()}`
+    console.log('Vehicles: Fetching with URL:', url)
+
+    fetch(url)
       .then((r) => {
+        console.log('Vehicles: API response status:', r.status)
         if (r.status === 401) {
           // Not logged in — show a message
           setVehiclesError('Please sign in to browse available vehicles.')
@@ -144,6 +156,7 @@ export default function VehiclesPage() {
         return r.json()
       })
       .then((data) => {
+        console.log('Vehicles: Data received:', data)
         if (!data) return
         if (data.vehicles) {
           setVehicles(data.vehicles)
@@ -151,7 +164,10 @@ export default function VehiclesPage() {
           setVehiclesError(data.message ?? 'Could not load vehicles.')
         }
       })
-      .catch(() => setVehiclesError('Could not load vehicles. Please try again.'))
+      .catch((error) => {
+        console.error('Vehicles: Error fetching vehicles:', error)
+        setVehiclesError('Could not load vehicles. Please try again.')
+      })
       .finally(() => setLoadingVehicles(false))
   }
 

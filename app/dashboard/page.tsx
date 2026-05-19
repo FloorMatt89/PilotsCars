@@ -84,28 +84,56 @@ function DashboardContent() {
     async function load() {
       setLoading(true)
 
-      // Fetch user profile — use login endpoint behavior: check session via bookings route (redirects if unauthed)
-      // We'll detect auth state by fetching bookings
-      const [bookingsRes, referralsRes] = await Promise.all([
-        fetch('/api/bookings'),
-        fetch('/api/referrals'),
-      ])
+      try {
+        // Fetch user profile, bookings, and referrals in parallel
+        const [profileRes, bookingsRes, referralsRes] = await Promise.all([
+          fetch('/api/users/profile'),
+          fetch('/api/bookings'),
+          fetch('/api/referrals'),
+        ])
 
-      if (bookingsRes.status === 401) {
-        setAuthError(true)
+        console.log('Dashboard API responses:', { profile: profileRes.status, bookings: bookingsRes.status, referrals: referralsRes.status })
+
+        // Check if user is authenticated
+        if (profileRes.status === 401 || bookingsRes.status === 401) {
+          console.log('Dashboard: User not authenticated')
+          setAuthError(true)
+          setLoading(false)
+          return
+        }
+
+        // Fetch profile data
+        if (profileRes.ok) {
+          const profileData = await profileRes.json()
+          console.log('Dashboard: Profile loaded', profileData)
+          setProfile(profileData)
+        } else {
+          console.log('Dashboard: Profile fetch failed', profileRes.status)
+        }
+
+        // Fetch bookings data
+        if (bookingsRes.ok) {
+          const bookingsData = await bookingsRes.json()
+          console.log('Dashboard: Bookings loaded', bookingsData)
+          setBookings(bookingsData.bookings ?? [])
+        } else {
+          console.log('Dashboard: Bookings fetch failed', bookingsRes.status)
+        }
+
+        // Fetch referrals data
+        if (referralsRes.ok) {
+          const referralsData = await referralsRes.json()
+          console.log('Dashboard: Referrals loaded', referralsData)
+          setReferralData(referralsData)
+        } else {
+          console.log('Dashboard: Referrals fetch failed', referralsRes.status)
+        }
+
         setLoading(false)
-        return
+      } catch (error) {
+        console.error('Dashboard: Error loading data', error)
+        setLoading(false)
       }
-
-      const bookingsData = await bookingsRes.json()
-      const referralsData = referralsRes.ok ? await referralsRes.json() : null
-
-      setBookings(bookingsData.bookings ?? [])
-      setReferralData(referralsData)
-
-      // Extract user from first booking or use a minimal profile
-      // We don't have a GET /api/users/me endpoint, so we'll show what we have
-      setLoading(false)
     }
 
     load()

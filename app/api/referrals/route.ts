@@ -26,7 +26,8 @@ export async function GET() {
       paid_at,
       created_at,
       referred_user_id,
-      bookings (
+      booking_id,
+      bookings!referrals_booking_id_fkey (
         id,
         pickup_date,
         return_date,
