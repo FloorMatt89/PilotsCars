@@ -1,11 +1,11 @@
+import Link from "next/link";
 import VehicleCard from "@/components/VehicleCard";
 import AnimationProvider from "@/components/AnimationProvider";
 import ScrollVideoStory from "@/components/ScrollVideoStory";
 import AirlineMarquee from "@/components/AirlineMarquee";
-import {
-  IconPin, IconCalendar, IconBadge, IconSearch,
-  IconArrowRight, IconPaperPlane,
-} from "@/components/Icons";
+import SearchDock from "@/components/SearchDock";
+import HeroSignInLink from "@/components/HeroSignInLink";
+import { IconArrowRight, IconPaperPlane } from "@/components/Icons";
 
 const FIELDS = [
   ["KORD", "Chicago O'Hare", "312"],
@@ -49,7 +49,7 @@ export default function HomePage() {
         <div className="hero-content">
           <span className="hero-badge" data-hero-reveal>
             <span className="hero-badge-dot" />
-            Boarding now — Founding crew waitlist
+            Verified airline crew only — No deposit required
           </span>
 
           <h1 className="hero-h1" data-hero-reveal>
@@ -58,9 +58,20 @@ export default function HomePage() {
           </h1>
 
           <p className="hero-sub" data-hero-reveal>
-            A closed marketplace for airline crew. Verified hosts, crew rates, no
-            rental-counter line — at 38 fields and growing.
+            No deposits. No hidden fees. All-inclusive pricing with unlimited miles and
+            tolls — for verified airline crew only.
           </p>
+
+          {/* Hero CTAs */}
+          <div data-hero-reveal style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+            <Link href="/vehicles" className="btn-primary" style={{ height: 48, padding: "0 28px", fontSize: 15 }}>
+              Browse vehicles
+            </Link>
+            <Link href="/referrals" className="btn-dark" style={{ height: 48, padding: "0 24px", fontSize: 15 }}>
+              Earn 8% — Refer crew <IconArrowRight width={14} height={14} strokeWidth={2} />
+            </Link>
+            <HeroSignInLink />
+          </div>
         </div>
 
         <div className="hero-strip" aria-hidden="true" data-hero-reveal>
@@ -78,63 +89,8 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Search dock */}
-        <div className="searchdock" data-hero-reveal>
-          <div className="searchdock-row">
-            <div className="searchdock-cell">
-              <span className="searchdock-label">Pick-up field</span>
-              <div className="searchdock-value">
-                <IconPin /><input type="text" placeholder="ICAO or city" defaultValue="KORD · Chicago O'Hare" />
-              </div>
-            </div>
-            <div className="searchdock-cell">
-              <span className="searchdock-label">Drop-off field</span>
-              <div className="searchdock-value">
-                <IconPin /><input type="text" defaultValue="Same as pick-up" />
-              </div>
-            </div>
-            <div className="searchdock-cell">
-              <span className="searchdock-label">Pick-up date &amp; time</span>
-              <div className="searchdock-value">
-                <IconCalendar /><input type="text" defaultValue="May 22 · 14:30" />
-              </div>
-            </div>
-            <div className="searchdock-cell">
-              <span className="searchdock-label">Drop-off date &amp; time</span>
-              <div className="searchdock-value">
-                <IconCalendar /><input type="text" defaultValue="May 25 · 09:00" />
-              </div>
-            </div>
-            <div className="searchdock-cell">
-              <span className="searchdock-label">Crew ID</span>
-              <div className="searchdock-value">
-                <IconBadge />
-                <select defaultValue="UAL — Pilot">
-                  <option>UAL — Pilot</option>
-                  <option>AAL — Flight attendant</option>
-                  <option>DAL — Mechanic</option>
-                  <option>Family member</option>
-                </select>
-              </div>
-            </div>
-            <button className="searchdock-submit" type="button">
-              <IconSearch /> Search
-            </button>
-          </div>
-          <div className="searchdock-foot">
-            <span>Trip type</span>
-            <div className="seg-pills">
-              <span className="seg-pill is-active">Round trip</span>
-              <span className="seg-pill">One way</span>
-              <span className="seg-pill">Monthly</span>
-            </div>
-            <span style={{ marginLeft: "auto" }}>Filter</span>
-            <div className="seg-pills">
-              <span className="seg-pill is-active">Self-drive</span>
-              <span className="seg-pill">With driver</span>
-            </div>
-          </div>
-        </div>
+        {/* Search dock — live, database-backed */}
+        <SearchDock />
       </section>
 
       {/* ============ AIRLINE LOGO MARQUEE (between hero & scroll story) ============ */}
@@ -150,20 +106,20 @@ export default function HomePage() {
             <div className="stat-num">
               <span data-count-to="38">38</span> <em className="editorial-italic">fields</em>
             </div>
-            <div className="stat-label">Active outstations</div>
+            <div className="stat-label">Active locations</div>
           </div>
           <div>
-            <div className="stat-num"><span data-count-to="11">11</span></div>
-            <div className="stat-label">Cars on the manifest</div>
+            <div className="stat-num"><span>$0</span></div>
+            <div className="stat-label">Deposit required</div>
           </div>
           <div>
             <div className="stat-num">
-              <span data-count-to="42">42</span><span style={{ color: "var(--color-muted)", fontWeight: 500 }}>%</span>
+              <span data-count-to="8">8</span><span style={{ color: "var(--color-muted)", fontWeight: 500 }}>%</span>
             </div>
-            <div className="stat-label">Below counter rates</div>
+            <div className="stat-label">Referral commission</div>
           </div>
           <div>
-            <div className="stat-num"><span data-count-to="12400" data-count-suffix="+">12,400+</span></div>
+            <div className="stat-num">100<span style={{ color: "var(--color-muted)", fontWeight: 500, fontSize: "0.6em" }}>%</span></div>
             <div className="stat-label">Verified crew members</div>
           </div>
         </div>
@@ -173,13 +129,13 @@ export default function HomePage() {
       <section className="section wrap" data-reveal>
         <div className="section-head">
           <div>
-            <span className="eyebrow eyebrow--ink">The fleet at KORD this week</span>
+            <span className="eyebrow eyebrow--ink">Available vehicles</span>
             <h2 className="h-section" style={{ marginTop: 10 }}>
-              Eleven cars. <em className="editorial-italic">One closed roster.</em>
+              No deposit. <em className="editorial-italic">All-inclusive.</em>
             </h2>
-            <p>Two sedans, two SUVs, two minivans, three passenger vans, two cargo vans — every one of them on the Pilot manifest, all hosted by verified crew.</p>
+            <p>Sedans, SUVs, minivans, and vans — all with full insurance, unlimited miles, and tolls included. Verified crew only. No hidden fees at drop-off.</p>
           </div>
-          <a className="linkcta" href="/vehicles">See the full fleet <IconArrowRight /></a>
+          <Link className="linkcta" href="/vehicles">See the full fleet <IconArrowRight /></Link>
         </div>
 
         <div className="vgrid" data-stagger>
@@ -198,11 +154,11 @@ export default function HomePage() {
       <section className="section wrap" data-reveal style={{ paddingTop: 0 }}>
         <div className="section-head">
           <div>
-            <span className="eyebrow eyebrow--ink">Launching at these fields</span>
-            <h2 className="h-section" style={{ marginTop: 10 }}>Find a car at your next outstation</h2>
-            <p>The roster expands as crew on the ground sign on. Don&apos;t see your field yet? Tell us — we route hosts to the cities with crew demand.</p>
+            <span className="eyebrow eyebrow--ink">Active locations</span>
+            <h2 className="h-section" style={{ marginTop: 10 }}>Currently serving Miami and Orlando</h2>
+            <p>PilotCars is live at Miami and Orlando with more airline hubs coming. Tell us where your crew base is — we expand to meet demand.</p>
           </div>
-          <a className="linkcta" href="#">View all 38 fields <IconArrowRight /></a>
+          <Link className="linkcta" href="/vehicles">Browse available vehicles <IconArrowRight /></Link>
         </div>
         <div className="chips" data-stagger>
           {CHIPS.map(([code, name]) => (
@@ -217,32 +173,32 @@ export default function HomePage() {
       <section className="section wrap" data-reveal style={{ paddingTop: 0 }}>
         <div className="section-head">
           <div>
-            <span className="eyebrow eyebrow--ink">Crew-rate windows</span>
-            <h2 className="h-section" style={{ marginTop: 10 }}>Layovers worth the long taxi</h2>
+            <span className="eyebrow eyebrow--ink">Why PilotCars</span>
+            <h2 className="h-section" style={{ marginTop: 10 }}>Everything traditional rental gets wrong</h2>
           </div>
-          <a className="linkcta" href="#">See all offers <IconArrowRight /></a>
+          <Link className="linkcta" href="/referrals">View referral program <IconArrowRight /></Link>
         </div>
         <div className="deals">
           <article className="dealcard">
             <div className="dealcard-bg" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1600&q=80')" }} />
             <div className="dealcard-inner">
-              <span className="dealcard-validity">Valid May 18 – Jun 14</span>
+              <span className="dealcard-validity">No deposit</span>
               <div>
-                <div className="dealcard-title">Summer ramp window — Mountain bases, 3-night minimum.</div>
-                <div className="dealcard-pct">40<span style={{ fontSize: "0.5em" }}>%</span><sub>off counter rate</sub></div>
+                <div className="dealcard-title">Traditional rental holds $400–$1,500 on your card. PilotCars holds nothing.</div>
+                <div className="dealcard-pct">$0<sub>deposit, ever</sub></div>
               </div>
-              <span className="dealcard-fine">Auto-applied at booking. Some host blackout dates apply.</span>
+              <span className="dealcard-fine">Your money stays in your account. Pay only for the rental itself.</span>
             </div>
           </article>
           <article className="dealcard">
             <div className="dealcard-bg" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1600&q=80')" }} />
             <div className="dealcard-inner">
-              <span className="dealcard-validity">Valid through Jul 31</span>
+              <span className="dealcard-validity">All-inclusive pricing</span>
               <div>
-                <div className="dealcard-title">Long-layover discount for any booking over 5 nights, any field.</div>
-                <div className="dealcard-pct">65<span style={{ fontSize: "0.5em" }}>%</span><sub>online-only rate</sub></div>
+                <div className="dealcard-title">Insurance, unlimited local miles, and all tolls included in every booking.</div>
+                <div className="dealcard-pct">1<span style={{ fontSize: "0.5em" }}>×</span><sub>price, no surprises</sub></div>
               </div>
-              <span className="dealcard-fine">Verified crew ID required. Stacks with founding-member credit.</span>
+              <span className="dealcard-fine">The price at booking is the price you pay. Verified crew ID required to book.</span>
             </div>
           </article>
         </div>
@@ -254,14 +210,14 @@ export default function HomePage() {
           <div>
             <div className="dualblock-card">
               <div className="dualblock-icon"><IconPaperPlane width={22} height={22} /></div>
-              <h3>Beyond a rental.<br />A briefing.</h3>
-              <p>Every booking comes with the host&apos;s local notes — overnight parking near the field, the diner that&apos;s open at 04:30, where to top off before drop-off.</p>
-              <a className="btn-dark" href="/vehicles">Browse the manifest <IconArrowRight strokeWidth={2} /></a>
+              <h3>Refer crew.<br />Earn 8%.</h3>
+              <p>Share your referral code with fellow crew members. Every time someone you refer completes a booking, you earn 8% commission — paid monthly or as account credit.</p>
+              <Link className="btn-dark" href="/referrals">How referrals work <IconArrowRight strokeWidth={2} /></Link>
             </div>
             <div className="fleetstat">
               <div>
-                <div className="fleetstat-label">Cars on the manifest today</div>
-                <div className="fleetstat-num" data-count-to="3490">3,490</div>
+                <div className="fleetstat-label">Referral commission earned</div>
+                <div className="fleetstat-num">8<span style={{ fontSize: "0.5em", fontWeight: 400, color: "rgba(255,255,255,0.6)" }}>%</span></div>
               </div>
               <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 14a9 9 0 0 1 18 0" />
@@ -272,10 +228,11 @@ export default function HomePage() {
 
           <div className="dualblock-photo" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1542362567-b07e54358753?auto=format&fit=crop&w=1600&q=80')" }}>
             <div className="dualblock-photo-content">
-              <span className="eyebrow eyebrow--on-dark">Built with crew, not for them</span>
-              <h2 className="h-section" style={{ marginTop: 14 }}>
-                Crew rates,<br />
-                <em className="editorial-italic">crew trust</em>, no counter.
+              <span className="eyebrow eyebrow--on-dark">No deposit required</span>
+              <h2 className="h-section" style={{ marginTop: 14, color: "#fff" }}>
+                Insurance, miles,<br />
+                tolls.<br />
+                <em className="editorial-italic" style={{ color: "#F0CB6B" }}>All in.</em>
               </h2>
             </div>
           </div>

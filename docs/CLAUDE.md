@@ -75,7 +75,7 @@ For every response, include:
 - **Errors** — if something went wrong, explain it simply and say exactly how to fix it
 
 
-When a task involves external tools or technical elements that a non-coder wouldn't know (Supabase, Vercel, Stripe, localhost:3000, etc.):
+When a task involves external tools or technical elements that a non-coder wouldn’t know (Supabase, Vercel, Stripe, localhost:3000, etc.):
 - Walk through exactly where to find what they need (e.g. "go to your Supabase dashboard → Settings → API")
 - Describe what each key or setting does in one plain sentence
 - If there's SQL to run, explain what it's doing before they run it
@@ -228,3 +228,26 @@ Never say "done" if:
 
 Only build what is described in `project_specs.md`.
 If anything is unclear, ask before starting.
+
+
+---
+
+
+# Documentation for Agents
+
+This project maintains a suite of documentation files for agents and future developers. Always read the files relevant to your task before starting.
+
+- **[project_specs.md](project_specs.md)** — What the app does, who uses it, tech stack, pages, data models, and definition of "done"
+- **[style-guide.md](style-guide.md)** — Design philosophy, typography, colors, animations, photography, layout, and accessibility standards
+- **[business-context.md](business-context.md)** — Company overview, target audience, market position, value proposition, and key messaging
+- **[architecture.md](architecture.md)** — Project structure, tech choices, page layout, data flow, and animation architecture
+- **[database.md](database.md)** — Current scope (none) and future data models for when the platform evolves
+- **[api-reference.md](api-reference.md)** — Current scope (none) and future API endpoints for booking, referrals, and contact forms
+- **[roles.md](roles.md)** — Current scope (public only) and future user roles (crew member, fleet owner, admin)
+- **[testing.md](testing.md)** — Manual testing checklist, browser tests, animation tests, accessibility tests, and performance targets
+
+
+
+
+
+
